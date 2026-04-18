@@ -1,0 +1,14 @@
+# Kimi Squad Aliases
+# Add these to your ~/.zshrc or ~/.bashrc
+
+# Launch squad with Ralph Loop
+alias kimi-squad='kimi --agent-file ~/.kimi/agents/squad/squad.yaml --max-ralph-iterations 10'
+
+# Quick mode: single iteration, auto-approve (for scripting)
+alias kimi-squad-quick='kimi --agent-file ~/.kimi/agents/squad/squad.yaml --max-ralph-iterations 1 --yolo'
+
+# Run test harness
+alias squad-test='~/.kimi/agents/squad/test-harness.sh'
+
+# Edit squad prompts
+alias squad-edit='code ~/.kimi/agents/squad/'

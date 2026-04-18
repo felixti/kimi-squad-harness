@@ -1,0 +1,22 @@
+# Secrets
+mcp.json
+*.key
+*.pem
+.env
+
+# Node
+node_modules/
+package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Kimi sessions (local only)
+sessions/
+logs/

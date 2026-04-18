@@ -1,0 +1,42 @@
+---
+name: project-standards
+description: Project-specific conventions and standards for this codebase
+---
+
+# Project Standards
+
+## Tech Stack
+- **Backend**: Node.js + Express + Jest
+- **Frontend**: React + Tailwind CSS
+- **Testing**: Jest + Supertest (backend), React Testing Library (frontend)
+- **Package Manager**: npm
+
+## Architecture
+- API routes under `/api/v1/`
+- Controllers in `src/controllers/`
+- Services in `src/services/`
+- Tests co-located with source files (`.test.js` suffix)
+
+## Code Style
+- 2-space indentation
+- camelCase for variables/functions
+- PascalCase for components/classes
+- Semicolons required
+- Single quotes for strings
+
+## Patterns
+- Use dependency injection for services
+- Repository pattern for database access
+- Centralized error handling middleware
+- Async/await over callbacks
+
+## Testing Standards
+- >80% coverage on new code
+- Unit tests for services/utilities
+- Integration tests for API endpoints
+- Mock external dependencies
+
+## Git Conventions
+- Conventional commits: `feat:`, `fix:`, `test:`, `refactor:`
+- Branch naming: `feature/`, `bugfix/`, `hotfix/`
+- PRs require review before merge
