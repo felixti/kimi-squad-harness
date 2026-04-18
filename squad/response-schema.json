@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "squad-response-schema",
+  "title": "Squad Agent Response",
+  "description": "Standardized output format for all squad subagents",
+  "type": "object",
+  "required": ["agent", "gate", "verdict", "confidence", "findings"],
+  "properties": {
+    "agent": {
+      "type": "string",
+      "enum": ["backend", "frontend", "qa", "reviewer", "researcher"],
+      "description": "Which agent produced this response"
+    },
+    "gate": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Which quality gate this response addresses"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "APPROVE", "REVISION_NEEDED", "COMPLETED", "INFO"],
+      "description": "The agent's verdict for this gate"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Agent's confidence in the verdict (0.0-1.0)"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "message"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["CRITICAL", "MAJOR", "MINOR", "INFO", "PRAISE"]
+          },
+          "message": {
+            "type": "string",
+            "description": "Description of the finding"
+          },
+          "file": {
+            "type": "string",
+            "description": "File path, if applicable"
+          },
+          "line": {
+            "type": "integer",
+            "description": "Line number, if applicable"
+          },
+          "suggestion": {
+            "type": "string",
+            "description": "Suggested fix or improvement"
+          }
+        }
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Commands to run to verify or reproduce (e.g. test commands)"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "description": "Files created or modified by this agent"
+    },
+    "memory_updates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": { "type": "string", "description": ".context/ file to update" },
+          "content": { "type": "string", "description": "Content to append or replace" }
+        }
+      },
+      "description": "Suggested updates to .context/ memory files"
+    }
+  }
+}

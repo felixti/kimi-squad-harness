@@ -1,6 +1,6 @@
 # Kimi Squad Harness
 
-A production-ready multi-agent engineering squad for [Kimi Code CLI](https://github.com/MoonshotAI/kimi-cli). Five specialized agents orchestrated by a Tech Lead with exhaustive quality gates, Ralph Loop iteration, skills integration, and MCP tools.
+A **10/10 production-ready** multi-agent engineering squad for [Kimi Code CLI](https://github.com/MoonshotAI/kimi-cli). Five specialized agents orchestrated by a Tech Lead with exhaustive quality gates, Ralph Loop iteration, skills integration, MCP tools, and live-calibrated behavioral features.
 
 ## 🎯 What This Is
 
@@ -59,10 +59,14 @@ Researcher  Backend  Frontend   QA
 | **5 Quality Gates** | Self-Check → Functional → QA → Review → Integration |
 | **Fast Path** | Trivial/Small tasks skip subagents for speed |
 | **Ralph Loop** | Iterates until all gates pass (max 10 iterations) |
-| **28 Skills** | Curated domain knowledge for each specialist |
+| **21 Curated Skills** | Domain knowledge for each specialist (dead skills purged) |
 | **3 MCP Servers** | Brave Search + Grep + DotContext (memory) |
-| **Persistent Memory** | `.context/` directory for cross-session knowledge |
-| **Auto Feedback Loop** | Test harness validates configuration changes |
+| **Persistent Memory** | `.context/` directory with atomic writes for cross-session knowledge |
+| **3 Test Suites** | test-harness + integration-test + regression-suite (28 checks) |
+| **Convergence Detection** | Smart stopping when quality plateaus (not token-limited) |
+| **JSON Response Schema** | Standardized inter-agent communication format |
+| **Session Metrics** | Automatic cost/quality telemetry logging |
+| **Failure Recovery** | Retry + graceful degradation for subagent failures |
 
 ## 📁 Repository Structure
 
@@ -98,13 +102,14 @@ Researcher  Backend  Frontend   QA
 ## 🛡️ Security Notice
 
 **Never commit secrets.** This repository includes:
-- `mcp/mcp.json.example` — Template with placeholder API keys
+- `mcp/mcp.json.example` — Template (no hardcoded keys, uses env inheritance)
 - `.gitignore` rules for sensitive files
 
 Add your actual API keys after installation:
 ```bash
 cp mcp/mcp.json.example ~/.kimi/mcp.json
-# Edit ~/.kimi/mcp.json and replace placeholders
+export BRAVE_API_KEY=your_key_here
+# Get a key at https://brave.com/search/api/
 ```
 
 ## 📜 License

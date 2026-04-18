@@ -110,12 +110,14 @@ SKILLS=(
     "b-open-io/prompts@frontend-performance"
     "daffy0208/ai-dev-standards@accessibility-engineer"
     "vercel-labs/json-render@react"
-    "cowork-os/cowork-os@code-review"
-    "openhands/skills@security"
     "travisjneuman/.claude@database-expert"
     "1mangesh1/dev-skills-collection@docker-helper"
     "thebushidocollective/han@playwright-page-object-model"
-    "softaworks/agent-toolkit@openapi-to-typescript"
+    "manutej/luxor-claude-marketplace@frontend-architecture"
+    "vercel-labs/json-render@next"
+    "travisjneuman/.claude@systematic-debugging"
+    "addyosmani/web-quality-skills@verification-before-completion"
+    "softaworks/agent-toolkit@writing-plans"
 )
 
 INSTALLED=0
