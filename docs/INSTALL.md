@@ -70,6 +70,9 @@ vim ~/.kimi/mcp.json
 2. Create a free API key
 3. Replace `YOUR_BRAVE_API_KEY_HERE` in `~/.kimi/mcp.json`
 
+**DotContext (Memory):**
+No API key needed! DotContext is automatically configured.
+
 ## Step 6: Add Shell Alias
 
 Add to your `~/.zshrc` or `~/.bashrc`:
@@ -113,3 +116,23 @@ cp dotfiles/.kimi/AGENTS.md.example ./.kimi/AGENTS.md
 ```
 
 This auto-injects into the squad's system prompt when running in that directory.
+
+## Memory System Setup
+
+The squad uses `.context/` for persistent memory across sessions:
+
+```bash
+# Create memory structure in your project
+cp -r dotfiles/.context ./.context
+
+# The squad will automatically:
+# - READ memory before starting work
+# - WRITE updates after completing tasks
+```
+
+**Memory structure:**
+- `.context/docs/architecture.md` — System architecture
+- `.context/docs/patterns.md` — Coding patterns
+- `.context/docs/decisions.md` — Architecture decisions
+- `.context/agents/squad-memory.md` — Shared squad context
+- `.context/plans/current.md` — Active plans and progress

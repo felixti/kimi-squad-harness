@@ -9,6 +9,10 @@
     },
     "grep": {
       "url": "https://mcp.grep.app"
+    },
+    "dotcontext": {
+      "command": "npx",
+      "args": ["-y", "@dotcontext/mcp@latest", "serve", "--repo-path", "."]
     }
   }
 }

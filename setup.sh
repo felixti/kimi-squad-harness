@@ -229,7 +229,29 @@ else
 fi
 
 # ============================================================
-# STEP 8: Summary
+# STEP 8: Set Up Memory System
+# ============================================================
+echo ""
+echo "🧠 Setting up memory system..."
+
+if [ -d ".context" ]; then
+    echo "   ⏭️  .context/ already exists"
+else
+    mkdir -p .context/{docs,agents,plans,skills}
+    cp "$SCRIPT_DIR/dotfiles/.context/docs/"*.example .context/docs/ 2>/dev/null || true
+    cp "$SCRIPT_DIR/dotfiles/.context/agents/"*.example .context/agents/ 2>/dev/null || true
+    cp "$SCRIPT_DIR/dotfiles/.context/plans/"*.example .context/plans/ 2>/dev/null || true
+    
+    # Rename .example files
+    for f in .context/docs/*.example .context/agents/*.example .context/plans/*.example; do
+        [ -f "$f" ] && mv "$f" "${f%.example}"
+    done
+    
+    echo "   ✅ Memory system created at ./.context/"
+fi
+
+# ============================================================
+# STEP 9: Summary
 # ============================================================
 echo ""
 echo "╔═══════════════════════════════════════════════════════════════╗"
@@ -241,6 +263,7 @@ echo "   🤖 Squad agents       → $AGENTS_DIR"
 echo "   📚 Skills             → ~/.agents/skills/ ($(ls ~/.agents/skills/ 2>/dev/null | wc -l) skills)"
 echo "   🔌 MCP config         → $MCP_CONFIG"
 echo "   🐚 Shell aliases      → $SHELL_RC"
+echo "   🧠 Memory system      → ./.context/"
 echo ""
 echo "Quick start:"
 echo "   1. Get Brave API key: https://api.search.brave.com/app/keys"
@@ -255,6 +278,9 @@ echo "   squad-test        → Run validation harness"
 echo ""
 echo "Project config template:"
 echo "   cp $SCRIPT_DIR/dotfiles/.kimi/AGENTS.md.example ./.kimi/AGENTS.md"
+echo ""
+echo "Memory system:"
+echo "   The squad will automatically read/write ./.context/ for persistent memory"
 echo ""
 echo "Happy coding! 🚀"
 echo ""

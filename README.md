@@ -60,7 +60,8 @@ Researcher  Backend  Frontend   QA
 | **Fast Path** | Trivial/Small tasks skip subagents for speed |
 | **Ralph Loop** | Iterates until all gates pass (max 10 iterations) |
 | **28 Skills** | Curated domain knowledge for each specialist |
-| **2 MCP Servers** | Brave Search (web) + Grep (GitHub code search) |
+| **3 MCP Servers** | Brave Search + Grep + DotContext (memory) |
+| **Persistent Memory** | `.context/` directory for cross-session knowledge |
 | **Auto Feedback Loop** | Test harness validates configuration changes |
 
 ## 📁 Repository Structure
@@ -82,7 +83,12 @@ Researcher  Backend  Frontend   QA
 │   └── mcp.json.example    # MCP config template (add your API keys)
 ├── dotfiles/
 │   ├── .zshrc.example      # Shell aliases
-│   └── .kimi/AGENTS.md.example  # Per-project config template
+│   ├── .kimi/AGENTS.md.example  # Per-project config template
+│   └── .context/           # Memory system templates
+│       ├── docs/           # Architecture, patterns, decisions
+│       ├── agents/         # Squad memory
+│       ├── plans/          # Current/completed work
+│       └── skills/         # Project-specific skills
 └── docs/
     ├── INSTALL.md          # Detailed installation guide
     ├── ARCHITECTURE.md     # How the squad works
