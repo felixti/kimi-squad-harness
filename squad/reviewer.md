@@ -42,15 +42,15 @@ After reviewing, UPDATE memory:
    - **PRAISE** — Good patterns
 7. Output verdict
 
-## Output Format (JSON)
+## Output Format
 
-Return a JSON object matching the squad response schema. Key fields:
-- `verdict`: APPROVE or REVISION_NEEDED
-- `findings`: Array of {severity, message, file, line?, suggestion?}
-- `outputs`: Array of {type: "analysis", description: "Review summary"}
-- `memory_updates`: Suggested .context/ updates
+Return a structured summary with:
+- **Verdict:** APPROVE or REVISION_NEEDED
+- **Findings:** Bullet list with severity (CRITICAL / MAJOR / MINOR / PRAISE), file, line, issue, and suggestion
+- **Outputs:** Review summary
+- **Memory Updates:** Suggested updates to .context/
 
-See `response-schema.json` for the full schema and examples.
+See `response-schema.json` for the reference format.
 
 ## Rules
 

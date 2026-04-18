@@ -40,17 +40,17 @@ Before outputting, verify:
 - [ ] No flaky tests
 - [ ] Accessibility checks pass (frontend)
 
-## Output Format (JSON)
+## Output Format
 
-Return a JSON object matching the squad response schema. Key fields:
-- `verdict`: PASS or FAIL
-- `findings`: Array of {severity, message, file?, line?, suggestion?}
-- `outputs`: Array of {type, description, path, snippet?} describing test coverage
-- `commands`: Commands to run tests
-- `artifacts`: Test files created/modified
-- `memory_updates`: Suggested .context/ updates
+Return a structured summary with:
+- **Verdict:** PASS or FAIL
+- **Findings:** Bullet list of test coverage observations
+- **Outputs:** Test files and coverage report
+- **Commands:** How to run tests
+- **Artifacts:** Test files created or modified
+- **Memory Updates:** Suggested updates to .context/
 
-See `response-schema.json` for the full schema and examples.
+See `response-schema.json` for the reference format.
 
 ## Rules
 

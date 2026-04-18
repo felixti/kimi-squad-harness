@@ -26,17 +26,17 @@ After completing work, UPDATE memory:
 - **docker-helper** — Dockerfile best practices. READ for deployment tasks.
 - **test-driven-development** — TDD methodology. READ for test writing.
 
-## Output Format (JSON)
+## Output Format
 
-Return a JSON object matching the squad response schema. Key fields:
-- `verdict`: PASS or FAIL
-- `findings`: Array of {severity, message, file?, line?, suggestion?}
-- `outputs`: Array of {type, description, path, snippet?} describing what you built
-- `commands`: Commands to verify your work
-- `artifacts`: Files created/modified
-- `memory_updates`: Suggested .context/ updates
+Return a structured summary with:
+- **Verdict:** PASS or FAIL
+- **Findings:** Bullet list of observations, issues, and praise
+- **Outputs:** What you built (file paths and descriptions)
+- **Commands:** How to verify your work (tests, lint, etc.)
+- **Artifacts:** Files created or modified
+- **Memory Updates:** Suggested updates to .context/
 
-See `response-schema.json` for the full schema and examples.
+See `response-schema.json` for the reference format.
 
 ## Self-Check (Gate 1)
 

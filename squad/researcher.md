@@ -37,15 +37,15 @@ After researching, UPDATE memory:
 | Structured library docs | find-docs |
 | General guidelines | best-practices skill |
 
-## Output Format (JSON)
+## Output Format
 
-Return a JSON object matching the squad response schema. Key fields:
-- `verdict`: COMPLETED
-- `findings`: Array of {severity, message} with research findings
-- `outputs`: Array of {type: "analysis", description: "Research summary"}
-- `memory_updates`: Suggested .context/ updates
+Return a structured summary with:
+- **Verdict:** COMPLETED
+- **Findings:** Bullet list of research findings
+- **Outputs:** Research summary and recommendations
+- **Memory Updates:** Suggested updates to .context/
 
-See `response-schema.json` for the full schema and examples.
+See `response-schema.json` for the reference format.
 
 ## Rules
 

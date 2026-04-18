@@ -181,7 +181,7 @@ FEATURES=(
     "Failure Recovery:Failure Recovery"
     "Session Metrics:Session Metrics"
     "Atomic Writes:atomic"
-    "JSON Schema:response-schema.json"
+    "Response Schema:response-schema.json"
 )
 
 for feature in "${FEATURES[@]}"; do

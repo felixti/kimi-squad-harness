@@ -203,14 +203,24 @@ if [ "$SKILL_ISSUES" -eq 0 ]; then
 fi
 
 # ============================================================
-# TEST 8: JSON Schema
+# TEST 8: Response Schema Reference
 # ============================================================
 echo ""
-echo "TEST 8: JSON Response Schema"
-echo "## TEST 8: JSON Response Schema" >> "$REPORT"
+echo "TEST 8: Response Schema Reference"
+echo "## TEST 8: Response Schema Reference" >> "$REPORT"
 
-if [ -f ~/.kimi/agents/squad/response-schema.json ]; then
-    if python3 -c "import json; json.load(open('$HOME/.kimi/agents/squad/response-schema.json'))" 2>/dev/null; then
+# Check schema exists (may be in squad/ or docs/)
+SCHEMA_FOUND=false
+for path in ~/.kimi/agents/squad/response-schema.json ~/.kimi/agents/squad/docs/response-schema.json; do
+    if [ -f "$path" ]; then
+        SCHEMA_FOUND=true
+        SCHEMA_PATH="$path"
+        break
+    fi
+done
+
+if [ "$SCHEMA_FOUND" = true ]; then
+    if python3 -c "import json; json.load(open('$SCHEMA_PATH'))" 2>/dev/null; then
         echo "  ✅ PASS: response-schema.json exists and is valid JSON"
         echo "- ✅ JSON schema valid" >> "$REPORT"
     else
@@ -224,23 +234,23 @@ else
     ISSUES=$((ISSUES + 1))
 fi
 
-# Check that all agent prompts reference JSON output format
-JSON_PROMPTS=0
+# Check that all agent prompts reference structured output
+STRUCTURED_PROMPTS=0
 TOTAL_PROMPTS=0
 for f in ~/.kimi/agents/squad/*.md; do
     if [ "$(basename $f)" = "tech-lead.md" ]; then continue; fi
     TOTAL_PROMPTS=$((TOTAL_PROMPTS + 1))
-    if grep -q "Output Format.*JSON\|JSON object\|response schema" "$f" 2>/dev/null; then
-        JSON_PROMPTS=$((JSON_PROMPTS + 1))
+    if grep -q "Output Format\|structured summary\|response schema" "$f" 2>/dev/null; then
+        STRUCTURED_PROMPTS=$((STRUCTURED_PROMPTS + 1))
     fi
 done
 
-if [ "$JSON_PROMPTS" -eq "$TOTAL_PROMPTS" ]; then
-    echo "  ✅ PASS: All $TOTAL_PROMPTS subagent prompts reference JSON output"
-    echo "- ✅ All subagents use JSON schema ($JSON_PROMPTS/$TOTAL_PROMPTS)" >> "$REPORT"
+if [ "$STRUCTURED_PROMPTS" -eq "$TOTAL_PROMPTS" ]; then
+    echo "  ✅ PASS: All $TOTAL_PROMPTS subagent prompts reference structured output"
+    echo "- ✅ All subagents use structured output ($STRUCTURED_PROMPTS/$TOTAL_PROMPTS)" >> "$REPORT"
 else
-    echo "  ❌ FAIL: Only $JSON_PROMPTS/$TOTAL_PROMPTS subagents reference JSON output"
-    echo "- ❌ Subagent JSON compliance incomplete ($JSON_PROMPTS/$TOTAL_PROMPTS)" >> "$REPORT"
+    echo "  ❌ FAIL: Only $STRUCTURED_PROMPTS/$TOTAL_PROMPTS subagents reference structured output"
+    echo "- ❌ Subagent output compliance incomplete ($STRUCTURED_PROMPTS/$TOTAL_PROMPTS)" >> "$REPORT"
     ISSUES=$((ISSUES + 1))
 fi
 
@@ -268,7 +278,7 @@ check_feature() {
 }
 
 check_feature "Convergence Detection" "convergence"
-check_feature "Context Checkpoint Compression" "checkpoint"
+check_feature "Context Size Awareness" "context.*50%"
 check_feature "Subagent Failure Recovery" "failure"
 check_feature "Session Metrics Logging" "metrics"
 check_feature "Atomic Memory Writes" "atomic"

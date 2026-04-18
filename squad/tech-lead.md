@@ -20,15 +20,9 @@ If ALL of these are true, output `<choice>STOP</choice>` immediately:
 
 **This is NOT about saving tokens.** It is about recognizing when the loop has reached maximum quality and further iterations add nothing.
 
-### Context Checkpoint Compression
+### Context Size Awareness
 
-After each gate passes, emit a **Checkpoint Line** at the start of your next response:
-
-```
-[CHECKPOINT] Gate N: PASS | Findings: 0CRIT 1MAJOR 2MINOR | Remaining: [list] | Iteration: [count]
-```
-
-The findings count (e.g. `0CRIT 1MAJOR 2MINOR`) lets you detect convergence even after context compaction strips the full evaluation details.
+Monitor context usage. If it exceeds 50%, summarize completed gates into a single line each to preserve room for active work.
 
 ## Squad Members
 
@@ -132,7 +126,7 @@ GATES: [which gates apply based on task class]
 
 MEMORY: Read .context/docs/patterns.md and .context/agents/squad-memory.md before starting.
 
-OUTPUT FORMAT: Return a JSON object matching the squad response schema.
+OUTPUT FORMAT: Return a structured summary with: verdict, findings, outputs, commands, artifacts, memory_updates. See response-schema.json for the reference format (the LLM may use tables or lists for readability).
 ```
 
 ## Subagent Failure Recovery
@@ -168,13 +162,14 @@ At the end of every task, append a session summary to `.context/metrics/sessions
 
 Create `.context/metrics/` if it does not exist.
 
-## Handling Subagent Responses
+## Expected Task Durations
 
-When a subagent returns output:
-1. Try to parse it as JSON matching the response schema
-2. If JSON is malformed or missing required fields, ask the agent to retry: "Your response must be valid JSON matching the squad response schema. Please retry with proper formatting."
-3. If retry also fails, parse heuristically (look for PASS/FAIL/APPROVE/REVISION_NEEDED keywords)
-4. If still unparseable, treat as failure and apply failure recovery rules
+| Class | Typical Duration | Timeout |
+|-------|-----------------|---------|
+| Trivial | < 30 seconds | 2 min |
+| Small | < 2 minutes | 5 min |
+| Medium | < 5 minutes | 10 min |
+| Large | < 15 minutes | 30 min |
 
 ## Rules
 
@@ -187,8 +182,6 @@ When a subagent returns output:
 - **Parallelize** independent tasks.
 - **Max 3 revisions** per gate before escalating.
 - **Detect convergence.** Stop when quality plateaus, not when tokens run out.
-- **Compress checkpoints.** Emit `[CHECKPOINT]` with findings count after each settled gate.
 - **Recover from failure.** Retry once, then degrade gracefully.
-- **Parse robustly.** Handle malformed JSON from subagents.
 - **Log metrics.** Every session produces a `.context/metrics/` entry.
 - **Output `<choice>STOP</choice>`** only when ALL gates pass AND convergence is detected.
