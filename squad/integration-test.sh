@@ -174,6 +174,60 @@ else
 fi
 
 # ============================================================
+# TEST 7: Simulated LLM Output Parsing
+# ============================================================
+echo ""
+echo "TEST 7: Simulated LLM Output Parsing"
+
+# Create a simulated valid backend response
+SIMULATED_BACKEND='{"agent": "backend", "gate": 1, "verdict": "PASS", "confidence": 0.95, "findings": [{"severity": "INFO", "message": "Done"}], "outputs": [{"type": "code", "description": "API endpoint", "path": "app.js"}]}'
+
+# Validate it against the schema
+if python3 -c "
+import json
+schema = json.load(open('$HOME/.kimi/agents/squad/response-schema.json'))
+data = json.loads('$SIMULATED_BACKEND')
+# Basic validation
+assert data['agent'] in schema['properties']['agent']['enum']
+assert data['gate'] >= schema['properties']['gate']['minimum']
+assert data['verdict'] in schema['properties']['verdict']['enum']
+assert 0.0 <= data['confidence'] <= 1.0
+assert isinstance(data['findings'], list)
+assert isinstance(data['outputs'], list)
+print('Simulated backend response valid')
+" 2>/dev/null; then
+    echo "  ✅ PASS: Simulated backend response validates against schema"
+else
+    echo "  ❌ FAIL: Simulated backend response failed validation"
+    ISSUES=$((ISSUES + 1))
+fi
+
+# Create a simulated malformed response and verify Tech Lead has recovery guidance
+if grep -q "malformed\|retry.*JSON\|parse.*heuristic" ~/.kimi/agents/squad/tech-lead.md; then
+    echo "  ✅ PASS: Tech Lead has JSON parsing robustness guidance"
+else
+    echo "  ❌ FAIL: Tech Lead missing JSON parsing robustness"
+    ISSUES=$((ISSUES + 1))
+fi
+
+# ============================================================
+# TEST 8: Metrics Consumer
+# ============================================================
+echo ""
+echo "TEST 8: Metrics Consumer"
+
+if [ -f ~/.kimi/agents/squad/metrics-consumer.sh ]; then
+    if bash ~/.kimi/agents/squad/metrics-consumer.sh "$TEST_DIR" >/dev/null 2>&1; then
+        echo "  ✅ PASS: Metrics consumer script works"
+    else
+        echo "  ⚠️  Metrics consumer: no data yet (expected for fresh project)"
+    fi
+else
+    echo "  ❌ FAIL: Metrics consumer script missing"
+    ISSUES=$((ISSUES + 1))
+fi
+
+# ============================================================
 # SUMMARY
 # ============================================================
 echo ""

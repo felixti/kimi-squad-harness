@@ -115,9 +115,12 @@ SKILLS=(
     "thebushidocollective/han@playwright-page-object-model"
     "manutej/luxor-claude-marketplace@frontend-architecture"
     "vercel-labs/json-render@next"
-    "travisjneuman/.claude@systematic-debugging"
     "addyosmani/web-quality-skills@verification-before-completion"
     "softaworks/agent-toolkit@writing-plans"
+    # Additional skills referenced by prompts but not auto-installed:
+    # brainstorming, dispatching-parallel-agents, find-docs, find-skills,
+    # subagent-driven-development, test-driven-development
+    # Install manually with: ctx7 skills install <source>@<skill-name>
 )
 
 INSTALLED=0

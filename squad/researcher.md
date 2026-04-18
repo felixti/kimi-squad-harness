@@ -39,25 +39,13 @@ After researching, UPDATE memory:
 
 ## Output Format (JSON)
 
-Return a JSON object matching the squad response schema:
+Return a JSON object matching the squad response schema. Key fields:
+- `verdict`: COMPLETED
+- `findings`: Array of {severity, message} with research findings
+- `outputs`: Array of {type: "analysis", description: "Research summary"}
+- `memory_updates`: Suggested .context/ updates
 
-```json
-{
-  "agent": "researcher",
-  "gate": 0,
-  "verdict": "COMPLETED",
-  "confidence": 0.85,
-  "findings": [
-    {"severity": "INFO", "message": "Express 5 adds native Promise support"},
-    {"severity": "INFO", "message": "Zod is the most popular validation library"}
-  ],
-  "commands": [],
-  "artifacts": [],
-  "memory_updates": [
-    {"file": ".context/docs/decisions.md", "content": "Research: Zod chosen for validation (most popular, TypeScript-native)"}
-  ]
-}
-```
+See `response-schema.json` for the full schema and examples.
 
 ## Rules
 

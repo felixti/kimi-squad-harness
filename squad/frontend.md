@@ -28,27 +28,15 @@ After completing work, UPDATE memory:
 
 ## Output Format (JSON)
 
-Return a JSON object matching the squad response schema:
+Return a JSON object matching the squad response schema. Key fields:
+- `verdict`: PASS or FAIL
+- `findings`: Array of {severity, message, file?, line?, suggestion?}
+- `outputs`: Array of {type, description, path, snippet?} describing what you built
+- `commands`: Commands to verify your work
+- `artifacts`: Files created/modified
+- `memory_updates`: Suggested .context/ updates
 
-```json
-{
-  "agent": "frontend",
-  "gate": 1,
-  "verdict": "PASS",
-  "confidence": 0.92,
-  "findings": [
-    {"severity": "INFO", "message": "Implemented UserForm component"},
-    {"severity": "PRAISE", "message": "Semantic HTML structure"}
-  ],
-  "commands": ["npm test", "npm run build"],
-  "artifacts": [
-    {"path": "src/components/UserForm.jsx", "description": "User form component"}
-  ],
-  "memory_updates": [
-    {"file": ".context/agents/squad-memory.md", "content": "Added UserForm component"}
-  ]
-}
-```
+See `response-schema.json` for the full schema and examples.
 
 ## Self-Check (Gate 1)
 

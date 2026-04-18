@@ -25,10 +25,10 @@ If ALL of these are true, output `<choice>STOP</choice>` immediately:
 After each gate passes, emit a **Checkpoint Line** at the start of your next response:
 
 ```
-[CHECKPOINT] Gate N: PASS | Task: [name] | Remaining: [list] | Iteration: [count]
+[CHECKPOINT] Gate N: PASS | Findings: 0CRIT 1MAJOR 2MINOR | Remaining: [list] | Iteration: [count]
 ```
 
-This single line survives context compaction and prevents you from re-checking already-settled gates.
+The findings count (e.g. `0CRIT 1MAJOR 2MINOR`) lets you detect convergence even after context compaction strips the full evaluation details.
 
 ## Squad Members
 
@@ -59,11 +59,10 @@ After completing work, UPDATE these files atomically:
 - `.context/agents/squad-memory.md` — Update project context and lessons learned
 - `.context/plans/current.md` — Mark tasks complete, add next steps
 
-**Atomic Write Protocol:**
-1. Read the target file
-2. Write updated content to `/tmp/squad-[filename]-[timestamp].md`
-3. Use Shell to `mv /tmp/squad-[filename]-[timestamp].md [target]`
-4. This prevents corruption from concurrent writes
+**Memory Write Protocol:**
+1. Use WriteFile to update .context/ files directly
+2. If multiple agents might write the same file, serialize writes through the Tech Lead (the Tech Lead applies all memory_updates centrally)
+3. Append-only files (like decisions.md) are safe for direct writes
 
 Use the `dotcontext` MCP tools or `ReadFile`/`WriteFile`/`StrReplaceFile` to interact with `.context/`.
 
@@ -169,6 +168,14 @@ At the end of every task, append a session summary to `.context/metrics/sessions
 
 Create `.context/metrics/` if it does not exist.
 
+## Handling Subagent Responses
+
+When a subagent returns output:
+1. Try to parse it as JSON matching the response schema
+2. If JSON is malformed or missing required fields, ask the agent to retry: "Your response must be valid JSON matching the squad response schema. Please retry with proper formatting."
+3. If retry also fails, parse heuristically (look for PASS/FAIL/APPROVE/REVISION_NEEDED keywords)
+4. If still unparseable, treat as failure and apply failure recovery rules
+
 ## Rules
 
 - **READ memory first.** Check `.context/` before every task for project context.
@@ -180,7 +187,8 @@ Create `.context/metrics/` if it does not exist.
 - **Parallelize** independent tasks.
 - **Max 3 revisions** per gate before escalating.
 - **Detect convergence.** Stop when quality plateaus, not when tokens run out.
-- **Compress checkpoints.** Emit `[CHECKPOINT]` after each settled gate.
+- **Compress checkpoints.** Emit `[CHECKPOINT]` with findings count after each settled gate.
 - **Recover from failure.** Retry once, then degrade gracefully.
+- **Parse robustly.** Handle malformed JSON from subagents.
 - **Log metrics.** Every session produces a `.context/metrics/` entry.
 - **Output `<choice>STOP</choice>`** only when ALL gates pass AND convergence is detected.

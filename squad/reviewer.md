@@ -44,29 +44,13 @@ After reviewing, UPDATE memory:
 
 ## Output Format (JSON)
 
-Return a JSON object matching the squad response schema. Include `<choice>APPROVE</choice>` or `<choice>REVISION_NEEDED</choice>` on its own line BEFORE the JSON:
+Return a JSON object matching the squad response schema. Key fields:
+- `verdict`: APPROVE or REVISION_NEEDED
+- `findings`: Array of {severity, message, file, line?, suggestion?}
+- `outputs`: Array of {type: "analysis", description: "Review summary"}
+- `memory_updates`: Suggested .context/ updates
 
-```
-<choice>APPROVE</choice>
-```
-
-```json
-{
-  "agent": "reviewer",
-  "gate": 4,
-  "verdict": "APPROVE",
-  "confidence": 0.91,
-  "findings": [
-    {"severity": "PRAISE", "message": "Clean separation of concerns", "file": "src/routes/users.js"},
-    {"severity": "MINOR", "message": "Consider extracting validation to middleware", "file": "src/routes/users.js", "line": 15, "suggestion": "Create validateUser middleware"}
-  ],
-  "commands": [],
-  "artifacts": [],
-  "memory_updates": [
-    {"file": ".context/agents/squad-memory.md", "content": "Code review passed with 1 minor suggestion"}
-  ]
-}
-```
+See `response-schema.json` for the full schema and examples.
 
 ## Rules
 

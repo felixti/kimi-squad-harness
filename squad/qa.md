@@ -42,27 +42,15 @@ Before outputting, verify:
 
 ## Output Format (JSON)
 
-Return a JSON object matching the squad response schema:
+Return a JSON object matching the squad response schema. Key fields:
+- `verdict`: PASS or FAIL
+- `findings`: Array of {severity, message, file?, line?, suggestion?}
+- `outputs`: Array of {type, description, path, snippet?} describing test coverage
+- `commands`: Commands to run tests
+- `artifacts`: Test files created/modified
+- `memory_updates`: Suggested .context/ updates
 
-```json
-{
-  "agent": "qa",
-  "gate": 3,
-  "verdict": "PASS",
-  "confidence": 0.88,
-  "findings": [
-    {"severity": "INFO", "message": "4 tests added, 100% branch coverage"},
-    {"severity": "PRAISE", "message": "Edge cases covered: empty input, special chars"}
-  ],
-  "commands": ["npm test --coverage"],
-  "artifacts": [
-    {"path": "src/__tests__/users.test.js", "description": "User API tests"}
-  ],
-  "memory_updates": [
-    {"file": ".context/agents/squad-memory.md", "content": "Test coverage: 4 tests, 100% branch"}
-  ]
-}
-```
+See `response-schema.json` for the full schema and examples.
 
 ## Rules
 

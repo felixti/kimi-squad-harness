@@ -55,14 +55,27 @@ echo ""
 echo "TEST 2: MCP Server Startup"
 echo "## TEST 2: MCP Server Startup" >> "$REPORT"
 
-# Test Brave Search MCP with API key
-BRAVE_TEST=$(BRAVE_API_KEY="BSA34di360vLHgPwlsBI9Dva0JEIwPi" timeout 5 npx -y @modelcontextprotocol/server-brave-search 2>&1 || true)
-if echo "$BRAVE_TEST" | grep -q "BRAVE_API_KEY"; then
-    echo "  ✅ PASS: Brave Search MCP starts with API key"
-    echo "- ✅ Brave Search MCP starts" >> "$REPORT"
+# Validate BRAVE_API_KEY is set
+if [ -z "$BRAVE_API_KEY" ]; then
+    echo "  ⚠️  BRAVE_API_KEY not set in environment"
+    echo "      Set it with: export BRAVE_API_KEY=your_key_here"
+    echo "      Get a key at: https://brave.com/search/api/"
+    echo "- ⚠️ BRAVE_API_KEY not set" >> "$REPORT"
 else
-    echo "  ⚠️  Brave Search MCP: needs manual verification (requires MCP handshake)"
-    echo "- ⚠️ Brave Search MCP: manual verification needed" >> "$REPORT"
+    echo "  ✅ PASS: BRAVE_API_KEY is set"
+    echo "- ✅ BRAVE_API_KEY configured" >> "$REPORT"
+fi
+
+# Test Brave Search MCP startup (only if key is available)
+if [ -n "$BRAVE_API_KEY" ]; then
+    BRAVE_TEST=$(timeout 5 npx -y @modelcontextprotocol/server-brave-search 2>&1 || true)
+    if echo "$BRAVE_TEST" | grep -q "BRAVE_API_KEY"; then
+        echo "  ✅ PASS: Brave Search MCP starts"
+        echo "- ✅ Brave Search MCP starts" >> "$REPORT"
+    else
+        echo "  ⚠️  Brave Search MCP: needs manual verification (requires MCP handshake)"
+        echo "- ⚠️ Brave Search MCP: manual verification needed" >> "$REPORT"
+    fi
 fi
 
 # Test Grep MCP connectivity

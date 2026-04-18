@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "squad-response-schema",
   "title": "Squad Agent Response",
-  "description": "Standardized output format for all squad subagents",
+  "description": "Standardized output format for all squad subagents. See examples at the bottom.",
   "type": "object",
   "required": ["agent", "gate", "verdict", "confidence", "findings"],
   "properties": {
@@ -57,6 +57,33 @@
         }
       }
     },
+    "outputs": {
+      "type": "array",
+      "description": "Actual work product delivered by this agent (code, tests, analysis)",
+      "items": {
+        "type": "object",
+        "required": ["type", "description"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["code", "test", "config", "analysis", "summary"],
+            "description": "What kind of output this is"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief description of what was delivered"
+          },
+          "path": {
+            "type": "string",
+            "description": "File path where the output was written"
+          },
+          "snippet": {
+            "type": "string",
+            "description": "Key excerpt or summary of the output (max 500 chars)"
+          }
+        }
+      }
+    },
     "commands": {
       "type": "array",
       "items": { "type": "string" },
@@ -83,6 +110,82 @@
         }
       },
       "description": "Suggested updates to .context/ memory files"
+    }
+  },
+
+  "examples": {
+    "backend": {
+      "agent": "backend",
+      "gate": 1,
+      "verdict": "PASS",
+      "confidence": 0.95,
+      "findings": [
+        {"severity": "INFO", "message": "Implemented GET /users endpoint"},
+        {"severity": "PRAISE", "message": "Clean error handling pattern"}
+      ],
+      "outputs": [
+        {"type": "code", "description": "GET /users and GET /users/:id endpoints", "path": "app.js", "snippet": "app.get('/users/:id', (req, res) => { ... })"}
+      ],
+      "commands": ["npm test", "npm run lint"],
+      "artifacts": [{"path": "app.js", "description": "User API routes"}],
+      "memory_updates": [{"file": ".context/agents/squad-memory.md", "content": "Added GET endpoints"}]
+    },
+    "frontend": {
+      "agent": "frontend",
+      "gate": 1,
+      "verdict": "PASS",
+      "confidence": 0.92,
+      "findings": [
+        {"severity": "INFO", "message": "Implemented UserForm component"}
+      ],
+      "outputs": [
+        {"type": "code", "description": "UserForm React component", "path": "src/components/UserForm.jsx"}
+      ],
+      "commands": ["npm test", "npm run build"],
+      "artifacts": [{"path": "src/components/UserForm.jsx", "description": "User form component"}],
+      "memory_updates": [{"file": ".context/agents/squad-memory.md", "content": "Added UserForm component"}]
+    },
+    "qa": {
+      "agent": "qa",
+      "gate": 3,
+      "verdict": "PASS",
+      "confidence": 0.88,
+      "findings": [
+        {"severity": "INFO", "message": "6 tests, 100% branch coverage"}
+      ],
+      "outputs": [
+        {"type": "test", "description": "Jest tests for user endpoints", "path": "app.test.js"}
+      ],
+      "commands": ["npm test --coverage"],
+      "artifacts": [{"path": "app.test.js", "description": "User API tests"}],
+      "memory_updates": [{"file": ".context/agents/squad-memory.md", "content": "Test coverage: 100% branch"}]
+    },
+    "reviewer": {
+      "agent": "reviewer",
+      "gate": 4,
+      "verdict": "APPROVE",
+      "confidence": 0.91,
+      "findings": [
+        {"severity": "PRAISE", "message": "Clean separation of concerns", "file": "app.js"},
+        {"severity": "MINOR", "message": "Consider extracting validation", "file": "app.js", "line": 15, "suggestion": "Create validateUser middleware"}
+      ],
+      "outputs": [{"type": "analysis", "description": "Code review complete, 1 minor suggestion"}],
+      "commands": [],
+      "artifacts": [],
+      "memory_updates": [{"file": ".context/agents/squad-memory.md", "content": "Review approved with 1 minor suggestion"}]
+    },
+    "researcher": {
+      "agent": "researcher",
+      "gate": 1,
+      "verdict": "COMPLETED",
+      "confidence": 0.85,
+      "findings": [
+        {"severity": "INFO", "message": "Zod is the most popular validation library"}
+      ],
+      "outputs": [{"type": "analysis", "description": "Technology research and recommendations"}],
+      "commands": [],
+      "artifacts": [],
+      "memory_updates": [{"file": ".context/docs/decisions.md", "content": "Research: Zod chosen for validation"}]
     }
   }
 }

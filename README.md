@@ -59,7 +59,7 @@ Researcher  Backend  Frontend   QA
 | **5 Quality Gates** | Self-Check → Functional → QA → Review → Integration |
 | **Fast Path** | Trivial/Small tasks skip subagents for speed |
 | **Ralph Loop** | Iterates until all gates pass (max 10 iterations) |
-| **21 Curated Skills** | Domain knowledge for each specialist (dead skills purged) |
+| **20 Curated Skills** | Domain knowledge for each specialist (dead skills purged) |
 | **3 MCP Servers** | Brave Search + Grep + DotContext (memory) |
 | **Persistent Memory** | `.context/` directory with atomic writes for cross-session knowledge |
 | **3 Test Suites** | test-harness + integration-test + regression-suite (28 checks) |
