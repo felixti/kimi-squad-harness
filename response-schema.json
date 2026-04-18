@@ -4,7 +4,8 @@
   "title": "Squad Agent Response",
   "description": "Standardized output format for all squad subagents. See examples at the bottom.",
   "type": "object",
-  "required": ["agent", "gate", "verdict", "confidence", "findings"],
+  "required": ["agent", "gate", "verdict", "findings"],
+  "advisory_note": "This schema is a reference contract between agents and tooling. The LLM may produce human-readable tables or bullet lists instead of strict JSON. All fields beyond agent/gate/verdict/findings are optional.",
   "properties": {
     "agent": {
       "type": "string",

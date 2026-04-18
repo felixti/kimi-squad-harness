@@ -1,11 +1,11 @@
 #!/bin/bash
-# Squad Prompt Regression Suite
+# Squad Prompt Regression Suite v2.0
 # Ensures prompt changes don't alter core behavioral contracts
 # Run after ANY prompt edit to catch regressions
 set -e
 
-echo "🧪 Squad Prompt Regression Suite"
-echo "================================="
+echo "🧪 Squad Prompt Regression Suite v2.0"
+echo "======================================"
 
 ISSUES=0
 
@@ -24,7 +24,6 @@ else
     ISSUES=$((ISSUES + 1))
 fi
 
-# Verify each class has the expected gates
 EXPECTED_CLASSES=("Trivial" "Small" "Medium" "Large")
 for cls in "${EXPECTED_CLASSES[@]}"; do
     if grep -q "\*\*$cls\*\*" ~/.kimi/agents/squad/tech-lead.md; then
@@ -34,6 +33,17 @@ for cls in "${EXPECTED_CLASSES[@]}"; do
         ISSUES=$((ISSUES + 1))
     fi
 done
+
+# Verify gate counts match class definitions
+if grep -q "Trivial.*Gate 1" ~/.kimi/agents/squad/tech-lead.md && \
+   grep -q "Small.*Gates 1-2" ~/.kimi/agents/squad/tech-lead.md && \
+   grep -q "Medium.*Gates 1-4" ~/.kimi/agents/squad/tech-lead.md && \
+   grep -q "Large.*All 5" ~/.kimi/agents/squad/tech-lead.md; then
+    echo "  ✅ PASS: Gate ranges correctly mapped to classes"
+else
+    echo "  ❌ FAIL: Gate range mapping inconsistent"
+    ISSUES=$((ISSUES + 1))
+fi
 
 # ============================================================
 # TEST 2: Gate Definitions Preserved
@@ -108,7 +118,6 @@ for yaml in ~/.kimi/agents/squad/*.yaml; do
     BASENAME=$(basename "$yaml")
     if [ "$BASENAME" = "squad.yaml" ]; then continue; fi
     
-    # Each subagent YAML must have extend: default
     if grep -q "extend: default" "$yaml"; then
         echo "  ✅ PASS: $BASENAME has extend: default"
     else
@@ -116,7 +125,6 @@ for yaml in ~/.kimi/agents/squad/*.yaml; do
         ISSUES=$((ISSUES + 1))
     fi
     
-    # Each subagent YAML must have system_prompt_path
     if grep -q "system_prompt_path:" "$yaml"; then
         echo "  ✅ PASS: $BASENAME has system_prompt_path"
     else
@@ -124,7 +132,6 @@ for yaml in ~/.kimi/agents/squad/*.yaml; do
         ISSUES=$((ISSUES + 1))
     fi
     
-    # Each subagent must reference ReadFile
     if grep -q "ReadFile" "$yaml"; then
         echo "  ✅ PASS: $BASENAME has ReadFile"
     else
@@ -144,7 +151,6 @@ for md in ~/.kimi/agents/squad/backend.md ~/.kimi/agents/squad/frontend.md \
           ~/.kimi/agents/squad/researcher.md; do
     BASENAME=$(basename "$md")
     
-    # Each subagent must mention memory system
     if grep -qi "memory system\|\.context" "$md"; then
         echo "  ✅ PASS: $BASENAME references memory"
     else
@@ -152,7 +158,6 @@ for md in ~/.kimi/agents/squad/backend.md ~/.kimi/agents/squad/frontend.md \
         ISSUES=$((ISSUES + 1))
     fi
     
-    # Each subagent must have skills section
     if grep -qi "skills" "$md"; then
         echo "  ✅ PASS: $BASENAME has skills section"
     else
@@ -160,7 +165,6 @@ for md in ~/.kimi/agents/squad/backend.md ~/.kimi/agents/squad/frontend.md \
         ISSUES=$((ISSUES + 1))
     fi
     
-    # Each subagent must have self-check or output format
     if grep -qi "self-check\|output format\|verdict" "$md"; then
         echo "  ✅ PASS: $BASENAME has verification/output"
     else
@@ -173,7 +177,7 @@ done
 # TEST 7: Behavioral Feature Regression
 # ============================================================
 echo ""
-echo "TEST 7: Behavioral Feature Regression (10/10 Additions)"
+echo "TEST 7: Behavioral Feature Regression"
 
 FEATURES=(
     "Convergence Detection:convergence"
@@ -182,6 +186,8 @@ FEATURES=(
     "Session Metrics:Session Metrics"
     "Atomic Writes:atomic"
     "Response Schema:response-schema.json"
+    "Timeout Guidance:Expected Task Durations"
+    "Context Awareness:Context Size Awareness"
 )
 
 for feature in "${FEATURES[@]}"; do
@@ -196,6 +202,84 @@ for feature in "${FEATURES[@]}"; do
         ISSUES=$((ISSUES + 1))
     fi
 done
+
+# ============================================================
+# TEST 8: Parallel Delegation Contract
+# ============================================================
+echo ""
+echo "TEST 8: Parallel Delegation Contract"
+
+if grep -q "Parallelize" ~/.kimi/agents/squad/tech-lead.md && \
+   grep -q "independent" ~/.kimi/agents/squad/tech-lead.md; then
+    echo "  ✅ PASS: Parallel delegation guidance present"
+else
+    echo "  ❌ FAIL: Parallel delegation guidance missing"
+    ISSUES=$((ISSUES + 1))
+fi
+
+# Verify dispatching-parallel-agents skill is referenced
+if grep -q "dispatching-parallel-agents" ~/.kimi/agents/squad/tech-lead.md; then
+    echo "  ✅ PASS: dispatching-parallel-agents skill referenced"
+else
+    echo "  ⚠️  WARNING: dispatching-parallel-agents skill not referenced"
+fi
+
+# ============================================================
+# TEST 9: Failure Recovery Simulation
+# ============================================================
+echo ""
+echo "TEST 9: Failure Recovery Simulation"
+
+# Verify the retry-degrade sequence is complete
+if grep -q "Retry once" ~/.kimi/agents/squad/tech-lead.md && \
+   grep -q "Second failure" ~/.kimi/agents/squad/tech-lead.md && \
+   grep -q "Degrade gracefully" ~/.kimi/agents/squad/tech-lead.md; then
+    echo "  ✅ PASS: Failure recovery sequence complete (retry → degrade)"
+else
+    echo "  ❌ FAIL: Failure recovery sequence incomplete"
+    ISSUES=$((ISSUES + 1))
+fi
+
+# Verify all subagent types have degradation paths
+DEGRADE_CHECKS=(
+    "backend.*implement.*backend"
+    "QA.*write tests"
+    "reviewer.*perform.*review"
+    "researcher.*SearchWeb"
+)
+FOUND_DEGRADE=0
+for pattern in "${DEGRADE_CHECKS[@]}"; do
+    if grep -qiE "$pattern" ~/.kimi/agents/squad/tech-lead.md; then
+        FOUND_DEGRADE=$((FOUND_DEGRADE + 1))
+    fi
+done
+if [ "$FOUND_DEGRADE" -ge 3 ]; then
+    echo "  ✅ PASS: Degradation paths defined for $FOUND_DEGRADE/4 subagent types"
+else
+    echo "  ❌ FAIL: Only $FOUND_DEGRADE/4 degradation paths defined"
+    ISSUES=$((ISSUES + 1))
+fi
+
+# ============================================================
+# TEST 10: Large Task Gate Verification
+# ============================================================
+echo ""
+echo "TEST 10: Large Task Gate Verification"
+
+# Large tasks require all 5 gates
+if grep -q "Large.*All 5.*Full squad" ~/.kimi/agents/squad/tech-lead.md; then
+    echo "  ✅ PASS: Large tasks require full squad and all 5 gates"
+else
+    echo "  ❌ FAIL: Large task gate requirements unclear"
+    ISSUES=$((ISSUES + 1))
+fi
+
+# Verify Gate 5 (Integration) mentions backend + frontend together
+if grep -A2 "Gate 5: Integration" ~/.kimi/agents/squad/tech-lead.md | grep -qi "backend.*frontend\|together\|end-to-end"; then
+    echo "  ✅ PASS: Gate 5 mentions integration between backend and frontend"
+else
+    echo "  ⚠️  WARNING: Gate 5 integration scope not explicitly defined"
+fi
 
 # ============================================================
 # SUMMARY

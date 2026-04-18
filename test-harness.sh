@@ -238,7 +238,8 @@ fi
 STRUCTURED_PROMPTS=0
 TOTAL_PROMPTS=0
 for f in ~/.kimi/agents/squad/*.md; do
-    if [ "$(basename $f)" = "tech-lead.md" ]; then continue; fi
+    BASENAME=$(basename "$f")
+    if [ "$BASENAME" = "tech-lead.md" ] || [ "$BASENAME" = "README.md" ]; then continue; fi
     TOTAL_PROMPTS=$((TOTAL_PROMPTS + 1))
     if grep -q "Output Format\|structured summary\|response schema" "$f" 2>/dev/null; then
         STRUCTURED_PROMPTS=$((STRUCTURED_PROMPTS + 1))
@@ -288,25 +289,6 @@ if [ "$FEATURES" -eq "$TOTAL_FEATURES" ]; then
 fi
 
 # ============================================================
-# SUMMARY
-# ============================================================
-echo ""
-echo "## Summary" >> "$REPORT"
-echo "- Total Issues Found: $ISSUES" >> "$REPORT"
-echo "- Auto-Fixes Applied: $FIXES" >> "$REPORT"
-echo "- Status: $([ $ISSUES -eq 0 ] && echo 'ALL TESTS PASS' || echo 'ISSUES DETECTED')" >> "$REPORT"
-
-echo ""
-echo "========================================"
-echo "RESULTS:"
-echo "  Issues Found: $ISSUES"
-echo "  Auto-Fixes:   $FIXES"
-echo "  Status:       $([ $ISSUES -eq 0 ] && echo 'ALL TESTS PASS ✅' || echo 'ISSUES DETECTED ⚠️')"
-echo "========================================"
-echo ""
-echo "Full report: $REPORT"
-
-# ============================================================
 # TEST 7: Memory System
 # ============================================================
 echo ""
@@ -344,6 +326,41 @@ else
     echo "  ⚠️  WARNING: dotcontext MCP not found in ~/.kimi/mcp.json"
     echo "- ⚠️ dotcontext MCP not configured" >> "$REPORT"
 fi
+
+# ============================================================
+# TEST 10: Context/Token Awareness Validation
+# ============================================================
+echo ""
+echo "TEST 10: Context/Token Awareness"
+echo "## TEST 10: Context/Token Awareness" >> "$REPORT"
+
+if grep -q "context.*50%" ~/.kimi/agents/squad/tech-lead.md && \
+   grep -q "context_usage" ~/.kimi/agents/squad/tech-lead.md 2>/dev/null; then
+    echo "  ✅ PASS: Context usage tracking in session metrics"
+    echo "- ✅ Context usage tracking configured" >> "$REPORT"
+else
+    echo "  ⚠️  WARNING: Context usage not tracked in metrics (optional but recommended)"
+    echo "- ⚠️ Context usage tracking missing" >> "$REPORT"
+fi
+
+# ============================================================
+# SUMMARY
+# ============================================================
+echo ""
+echo "## Summary" >> "$REPORT"
+echo "- Total Issues Found: $ISSUES" >> "$REPORT"
+echo "- Auto-Fixes Applied: $FIXES" >> "$REPORT"
+echo "- Status: $([ $ISSUES -eq 0 ] && echo 'ALL TESTS PASS' || echo 'ISSUES DETECTED')" >> "$REPORT"
+
+echo ""
+echo "========================================"
+echo "RESULTS:"
+echo "  Issues Found: $ISSUES"
+echo "  Auto-Fixes:   $FIXES"
+echo "  Status:       $([ $ISSUES -eq 0 ] && echo 'ALL TESTS PASS ✅' || echo 'ISSUES DETECTED ⚠️')"
+echo "========================================"
+echo ""
+echo "Full report: $REPORT"
 
 # Exit with error code if issues found
 [ $ISSUES -eq 0 ] || exit 1

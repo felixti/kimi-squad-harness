@@ -150,15 +150,20 @@ At the end of every task, append a session summary to `.context/metrics/sessions
 {
   "timestamp": "ISO8601",
   "task_class": "Small|Medium|Large",
+  "duration_seconds": 120,
   "iterations": N,
   "gates_passed": N,
   "subagents_called": ["backend", "qa"],
+  "context_usage_percent": 9.5,
   "bugs_found": N,
   "revisions_required": N,
-  "status": "completed|escalated|failed",
+  "status": "completed|escalated|failed|timeout",
   "notes": "Any anomalies or lessons"
 }
 ```
+
+**Required fields:** timestamp, task_class, duration_seconds, status.
+**Optional but recommended:** context_usage_percent (read from `context: X%` in kimi output), iterations, gates_passed.
 
 Create `.context/metrics/` if it does not exist.
 
