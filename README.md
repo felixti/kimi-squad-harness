@@ -76,17 +76,21 @@ kimi --agent-file ~/.kimi/agents/squad/squad.yaml --yolo
 | DELETE /users/:id | Small | ~60s | 14 | 100% | 1–2 |
 | PUT /users/:id | Medium | ~5min | 24 | 100% | 1–4 |
 | Task Management module | Large | ~15min | 70 | 100% | 1–5* |
+| AI Chat + File Ingestion | Large | ~40min | 118+ | 94% | 1–4† |
 
-\* Large task timed out at 15min during Gate 4 (reviewer). Code was complete and all 70 tests passed. Gates 4–5 need an additional 5–10 min.
+\* Timed out at 15min during Gate 4. Code complete, all tests passed. Gates 4–5 need +5–10 min.
+† Timed out at 40min due to API auth expiration. Parallel backend + frontend delivery. 45 Python tests + 73 TS tests passing.
 
-**Context usage**: 9.1–17.8% of 262K window (healthy, no compaction needed)
+**Context usage**: 9.1–42.7% of 262K window (healthy, compaction not needed until >50%)
 
 ## Honest Limitations
 
 1. **No native non-interactive mode**: Kimi CLI launches a TUI. We wrap it in tmux (`run_squad.sh`). True CI/CD automation requires upstream support.
-2. **JSON schema is advisory**: The LLM produces human-readable tables/bullets. The schema in `docs/response-schema.json` is a tooling contract, not an LLM mandate.
-3. **Checkpoints are optional**: Never emitted in Small/Medium tasks. Kept in prompts for Large tasks where context compounding may occur.
-4. **Medium tasks can timeout**: The PUT endpoint took ~5 minutes. Wrapper defaults to 600s but convergence detection should catch most cases earlier.
+2. **API auth expiration on long sessions**: Sessions > 40 minutes may hit `401 invalid_authentication_error`. This is an upstream Kimi CLI/API limitation, not a harness bug.
+3. **JSON schema is advisory**: The LLM produces human-readable tables/bullets. The schema in `docs/response-schema.json` is a tooling contract, not an LLM mandate.
+4. **Checkpoints are optional**: Never emitted in Small/Medium tasks. Kept in prompts for Large tasks where context compounding may occur.
+5. **Large tasks need 20–30 min**: A full 5-gate Large task with parallel subagents can take 20–40 minutes. Plan timeouts accordingly.
+6. **Context compounding on very large tasks**: Context usage peaked at 42.7% on the AI Chat monorepo. Still healthy, but approaching the 50% compression threshold.
 
 ## Test Suites
 

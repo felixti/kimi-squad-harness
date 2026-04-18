@@ -82,6 +82,23 @@ cleanup() {
 trap cleanup EXIT INT TERM HUP
 
 # =============================================================================
+# METRICS HELPER (defined early for use in loop)
+# =============================================================================
+write_metrics() {
+    local status="${1:-unknown}"
+    local notes="${2:-}"
+    local ts
+    local dur
+    ts=$(date -Iseconds)
+    dur=$(( $(date +%s) - START_TIME ))
+
+    cat >> "$METRICS_FILE" << EOF
+{"timestamp":"$ts","task_class":"${TASK_CLASS:-unknown}","duration_seconds":$dur,"iterations":${ITERATIONS:-0},"gates_passed":${GATE_PASSES:-0},"subagents_called":${SUBAGENTS:-0},"context_usage_percent":${FINAL_CONTEXT:-0},"bugs_found":0,"revisions_required":0,"status":"$status","notes":"$notes"}
+EOF
+    METRICS_WRITTEN=1
+}
+
+# =============================================================================
 # SESSION START
 # =============================================================================
 echo "🚀 Squad Task Runner v2.0"
@@ -181,20 +198,8 @@ TASK_CLASS=$(grep -oE 'Class: (Trivial|Small|Medium|Large)' "$LOG" 2>/dev/null |
 TASK_CLASS="${TASK_CLASS:-unknown}"
 
 # =============================================================================
-# WRITE METRICS
+# WRITE FINAL METRICS
 # =============================================================================
-write_metrics() {
-    local status="${1:-unknown}"
-    local notes="${2:-}"
-    local ts
-    ts=$(date -Iseconds)
-
-    cat >> "$METRICS_FILE" << EOF
-{"timestamp":"$ts","task_class":"$TASK_CLASS","duration_seconds":$DURATION,"iterations":$ITERATIONS,"gates_passed":$GATE_PASSES,"subagents_called":$SUBAGENTS,"context_usage_percent":$FINAL_CONTEXT,"bugs_found":0,"revisions_required":0,"status":"$status","notes":"$notes"}
-EOF
-    METRICS_WRITTEN=1
-}
-
 if [ "$STOP_FOUND" = true ]; then
     write_metrics "completed" "STOP emitted, duration ${DURATION}s"
 else
