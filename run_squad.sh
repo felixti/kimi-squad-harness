@@ -170,9 +170,11 @@ FINAL_CONTEXT="${FINAL_CONTEXT:-$MAX_CONTEXT}"
 
 # Count checkpoints, gate passes, subagent launches
 CHECKPOINTS=$(grep -c '\[CHECKPOINT\]' "$LOG" 2>/dev/null || echo 0)
-GATE_PASSES=$(grep -c 'PASS\|APPROVE' "$LOG" 2>/dev/null || echo 0)
-SUBAGENTS=$(grep -oE '"subagent_type": "[a-z]+"' "$LOG" 2>/dev/null | sort -u | wc -l || echo 0)
-ITERATIONS=$(grep -c 'Ralph Loop iteration\|Iteration' "$LOG" 2>/dev/null || echo 0)
+GATE_PASSES=$(grep -cE 'PASS|APPROVE' "$LOG" 2>/dev/null || echo 0)
+# Subagent launches: look for "subagent" lines in tmux output
+SUBAGENTS=$(grep -oE 'subagent (backend|frontend|qa|reviewer|researcher)' "$LOG" 2>/dev/null | sort -u | wc -l || echo 0)
+# Iterations: look for Ralph Loop or todo list updates
+ITERATIONS=$(grep -cE 'Ralph Loop|SetTodoList' "$LOG" 2>/dev/null || echo 0)
 
 # Extract task class from log (if Tech Lead classified it)
 TASK_CLASS=$(grep -oE 'Class: (Trivial|Small|Medium|Large)' "$LOG" 2>/dev/null | head -1 | cut -d: -f2 | tr -d ' ')

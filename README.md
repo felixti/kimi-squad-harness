@@ -71,12 +71,15 @@ kimi --agent-file ~/.kimi/agents/squad/squad.yaml --yolo
 
 ## Live Calibration Results
 
-| Task | Class | Duration | Tests | Coverage |
-|------|-------|----------|-------|----------|
-| DELETE /users/:id | Small | ~60s | 14 | 100% |
-| PUT /users/:id | Medium | ~5min | 24 | 100% |
+| Task | Class | Duration | Tests | Coverage | Gates |
+|------|-------|----------|-------|----------|-------|
+| DELETE /users/:id | Small | ~60s | 14 | 100% | 1–2 |
+| PUT /users/:id | Medium | ~5min | 24 | 100% | 1–4 |
+| Task Management module | Large | ~15min | 70 | 100% | 1–5* |
 
-**Context usage**: 9.1–9.7% of 262K window (healthy, no compaction needed)
+\* Large task timed out at 15min during Gate 4 (reviewer). Code was complete and all 70 tests passed. Gates 4–5 need an additional 5–10 min.
+
+**Context usage**: 9.1–17.8% of 262K window (healthy, no compaction needed)
 
 ## Honest Limitations
 

@@ -174,7 +174,9 @@ Create `.context/metrics/` if it does not exist.
 | Trivial | < 30 seconds | 2 min |
 | Small | < 2 minutes | 5 min |
 | Medium | < 5 minutes | 10 min |
-| Large | < 15 minutes | 30 min |
+| Large | 15–25 minutes | 30 min |
+
+**Large task reality:** A full 5-gate Large task with backend + QA + reviewer typically takes 15–20 minutes. The code is often complete by minute 12, but Gates 4–5 (review + integration verification) add 5–10 minutes. Plan wrapper timeouts accordingly.
 
 ## Rules
 
